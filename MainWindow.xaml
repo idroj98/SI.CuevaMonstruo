@@ -1,0 +1,24 @@
+﻿<Window x:Class="SICuevaMonstruo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SICuevaMonstruo"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="720" Width="1280">
+    <Grid Background="LightBlue">
+        <Grid Name="Cueva" Background="White" HorizontalAlignment="Left" Height="670" Margin="594,10,0,0" VerticalAlignment="Top" Width="670
+"/>
+        <Label Content="Dimensiones" FontSize="16" HorizontalAlignment="Left" Margin="13,155,0,0" VerticalAlignment="Top"/>
+        <TextBox Name="Dimesion" HorizontalAlignment="Left" Height="22" Margin="119,163,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <Button Name="CrearMapa" FontSize="16" Content="Crear mapa" HorizontalAlignment="Left" Margin="119,203,0,0" VerticalAlignment="Top" Width="120" Click="CrearMapa_Click"/>
+        <Label Content="La Cueva del monstruo" FontSize="45" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="98" Width="579"/>
+        <Button Name="SeleccionMonstruo" Content="Monstruo" HorizontalAlignment="Left" Margin="119,251,0,0" VerticalAlignment="Top" Width="75" Click="SeleccionMonstruo_Click"/>
+        <Button Name="SeleccionPrecipicio" Content="Precipicio" HorizontalAlignment="Left" Margin="119,288,0,0" VerticalAlignment="Top" Width="75" Click="SeleccionPrecipicio_Click"/>
+        <Button Name="SeleccionAgente" Content="Agente" HorizontalAlignment="Left" Margin="119,325,0,0" VerticalAlignment="Top" Width="75" Click="SeleccionAgente_Click"/>
+        <Button Name="SeleccionTesoro" Content="Tesoro" HorizontalAlignment="Left" Margin="119,358,0,0" VerticalAlignment="Top" Width="75" Click="SeleccionTesoro_Click"/>
+        <Button Name="Start" Content="Start" HorizontalAlignment="Left" Margin="83,464,0,0" VerticalAlignment="Top" Width="75" Click="Start_Click"/>
+        <Button Name="Stop" Content="Stop" HorizontalAlignment="Left" Margin="164,464,0,0" VerticalAlignment="Top" Width="75" Click="Stop_Click"/>
+
+    </Grid>
+</Window>
