@@ -10,12 +10,14 @@ namespace SICuevaMonstruo
     public class Agente
     {
         private Celda[,] _mapa;
+        private int _dimesionMapa;
         public Posicion Posicion { get; }
         public UIElement Elemento { get; }
 
         public Agente(int dimension, Posicion posicion, UIElement elemento)
         {
             _mapa = new Celda[dimension, dimension];
+            _dimesionMapa = dimension;
 
             for (int i = 0; i < dimension; i++)
             {
@@ -29,10 +31,13 @@ namespace SICuevaMonstruo
             Elemento = elemento;
         }
 
-        public Posicion Update()
+        public void Update()
         {
-
-            return null;
+            Posicion.Y++;
+            if (Posicion.Y == _dimesionMapa)
+            {
+                Posicion.Y = 0;
+            }
         }
     }
 }

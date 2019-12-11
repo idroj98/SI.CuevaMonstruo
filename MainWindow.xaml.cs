@@ -49,7 +49,9 @@ namespace SICuevaMonstruo
         {
             foreach (var agente in _agentes)
             {
-                var posicion = agente.Update();
+                agente.Update();
+                Grid.SetRow(agente.Elemento, agente.Posicion.X);
+                Grid.SetColumn(agente.Elemento, agente.Posicion.Y);
             }
         }
 
