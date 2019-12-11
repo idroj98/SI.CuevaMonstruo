@@ -41,6 +41,8 @@ namespace SICuevaMonstruo
             _agentes = new List<Agente>();
 
             InitializeComponent();
+
+            this.Seleccion.ItemsSource = Enum.GetValues(typeof(ObjetoSeleccionado)).Cast<ObjetoSeleccionado>();
         }
 
         private void Update(object sender, EventArgs e)
@@ -296,26 +298,6 @@ namespace SICuevaMonstruo
             return (Border)aux;
         }
 
-        private void SeleccionMonstruo_Click(object sender, RoutedEventArgs e)
-        {
-            _objetoSeleccionado = ObjetoSeleccionado.Monstruo;
-        }
-
-        private void SeleccionPrecipicio_Click(object sender, RoutedEventArgs e)
-        {
-            _objetoSeleccionado = ObjetoSeleccionado.Precipicio;
-        }
-
-        private void SeleccionAgente_Click(object sender, RoutedEventArgs e)
-        {
-            _objetoSeleccionado = ObjetoSeleccionado.Agente;
-        }
-
-        private void SeleccionTesoro_Click(object sender, RoutedEventArgs e)
-        {
-            _objetoSeleccionado = ObjetoSeleccionado.Tesoro;
-        }
-
         private void Start_Click(object sender, RoutedEventArgs e)
         {
             _dispatcherTimer.Start();
@@ -324,6 +306,11 @@ namespace SICuevaMonstruo
         private void Stop_Click(object sender, RoutedEventArgs e)
         {
             _dispatcherTimer.Stop();
+        }
+
+        private void Seleccion_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            this._objetoSeleccionado = (ObjetoSeleccionado)this.Seleccion.SelectedItem;
         }
     }
 }
