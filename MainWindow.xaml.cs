@@ -47,7 +47,7 @@ namespace SICuevaMonstruo
 
         private void Update(object sender, EventArgs e)
         {
-            foreach(var agente in _agentes)
+            foreach (var agente in _agentes)
             {
                 var posicion = agente.Update();
             }
@@ -125,159 +125,121 @@ namespace SICuevaMonstruo
             var columna = Grid.GetColumn(pan);
             var fila = Grid.GetRow(pan);
 
-            if (pan.Background == Brushes.White)
-            {
-                switch (_objetoSeleccionado)
-                {
-                    case ObjetoSeleccionado.Monstruo:
-                        pan.Background = Brushes.Green;
-                        Mapa[fila, columna].Monstruo = true;
-                        break;
-                    case ObjetoSeleccionado.Precipicio:
-                        pan.Background = Brushes.Black;
-                        Mapa[fila, columna].Precipicio = true;
-                        break;
-                    case ObjetoSeleccionado.Agente:
-                        var elemento = new Image()
-                        {
-                            Name = "Robot",
-                            Source = new BitmapImage(new Uri("https://res.cloudinary.com/pixel-art/image/upload/v1554320836/robot/1466134-robot-pixel-art.png")),
-                            Margin = new Thickness(0.5)
-                        };
-                        var agente = new Agente(_dimesionMapa, new Posicion() { X = fila, Y = columna }, elemento);
-                        _agentes.Add(agente);
-                        SetPosicionAgenteMapa(agente);
-                        break;
-                    case ObjetoSeleccionado.Tesoro:
-                        pan.Background = Brushes.Gold;
-                        Mapa[fila, columna].Resplandor = true;
-                        break;
-                }
 
-                AddAlrededores(fila, columna, _objetoSeleccionado);
+            switch (_objetoSeleccionado)
+            {
+                case ObjetoSeleccionado.Monstruo:
+                    Mapa[fila, columna].Monstruo = !Mapa[fila, columna].Monstruo;
+                    UpdateAlrededores(fila, columna, Mapa[fila, columna].Monstruo);
+                    break;
+                case ObjetoSeleccionado.Precipicio:
+                    Mapa[fila, columna].Precipicio = !Mapa[fila, columna].Precipicio;
+                    UpdateAlrededores(fila, columna, Mapa[fila, columna].Precipicio);
+                    break;
+                case ObjetoSeleccionado.Agente:
+                    var elemento = new Image()
+                    {
+                        Name = "Robot",
+                        Source = new BitmapImage(new Uri("https://res.cloudinary.com/pixel-art/image/upload/v1554320836/robot/1466134-robot-pixel-art.png")),
+                        Margin = new Thickness(0.5)
+                    };
+                    var agente = new Agente(_dimesionMapa, new Posicion() { X = fila, Y = columna }, elemento);
+                    _agentes.Add(agente);
+                    SetPosicionAgenteMapa(agente);
+                    break;
+                case ObjetoSeleccionado.Tesoro:
+                    Mapa[fila, columna].Resplandor = !Mapa[fila, columna].Resplandor;
+                    UpdateAlrededores(fila, columna, Mapa[fila, columna].Resplandor);
+                    break; 
+            }
+
+            ActualizarCasilla(fila, columna);
+        }
+
+        private void UpdateAlrededores(int fila, int columna, bool add)
+        {
+            switch (_objetoSeleccionado)
+            {
+                case ObjetoSeleccionado.Monstruo:
+                    if (fila + 1 < _dimesionMapa)
+                    {
+                        Mapa[fila + 1, columna].Hedor = add;
+                        ActualizarCasilla(fila + 1, columna);
+                    }
+                    if (fila - 1 >= 0)
+                    {
+                        Mapa[fila - 1, columna].Hedor = add;
+                        ActualizarCasilla(fila - 1, columna);
+                    }
+                    if (columna + 1 < _dimesionMapa)
+                    {
+                        Mapa[fila, columna + 1].Hedor = add;
+                        ActualizarCasilla(fila, columna + 1);
+                    }
+                    if (columna - 1 >= 0)
+                    {
+                        Mapa[fila, columna - 1].Hedor = add;
+                        ActualizarCasilla(fila, columna - 1);
+                    }
+                    break;
+                case ObjetoSeleccionado.Precipicio:
+                    if (fila + 1 < _dimesionMapa)
+                    {
+                        Mapa[fila + 1, columna].Brisa = add;
+                        ActualizarCasilla(fila + 1, columna);
+                    }
+                    if (fila - 1 >= 0)
+                    {
+                        Mapa[fila - 1, columna].Brisa = add;
+                        ActualizarCasilla(fila - 1, columna);
+                    }
+                    if (columna + 1 < _dimesionMapa)
+                    {
+                        Mapa[fila, columna + 1].Brisa = add;
+                        ActualizarCasilla(fila, columna + 1);
+                    }
+                    if (columna - 1 >= 0)
+                    {
+                        Mapa[fila, columna - 1].Brisa = add;
+                        ActualizarCasilla(fila, columna - 1);
+                    }
+                    break;
+            }
+        }
+
+        private void ActualizarCasilla(int fila, int columna)
+        {
+            if (Mapa[fila, columna].Monstruo)
+            {
+                GetBorderByIndex(fila, columna).Background = Brushes.Green;
+            }
+            else if (Mapa[fila, columna].Precipicio)
+            {
+                GetBorderByIndex(fila, columna).Background = Brushes.Black;
+            }
+            else if (Mapa[fila, columna].Hedor && Mapa[fila, columna].Brisa && Mapa[fila, columna].Resplandor)
+            {
+                GetBorderByIndex(fila, columna).Background = Brushes.Red;
+            }
+            else if (Mapa[fila, columna].Hedor && Mapa[fila, columna].Brisa)
+            {
+                GetBorderByIndex(fila, columna).Background = Brushes.Gray;
+            }
+            else if (Mapa[fila, columna].Resplandor)
+            {
+                GetBorderByIndex(fila, columna).Background = Brushes.Gold;
+            }
+            else if (Mapa[fila, columna].Hedor)
+            {
+                GetBorderByIndex(fila, columna).Background = Brushes.LightGreen;
+            }
+            else if (Mapa[fila, columna].Brisa)
+            {
+                GetBorderByIndex(fila, columna).Background = Brushes.LightBlue;
             }
             else
             {
-                switch (_objetoSeleccionado)
-                {
-                    case ObjetoSeleccionado.Monstruo:
-                        Mapa[fila, columna].Monstruo = false;
-                        break;
-                    case ObjetoSeleccionado.Precipicio:
-                        Mapa[fila, columna].Precipicio = false;
-                        break;
-                    case ObjetoSeleccionado.Agente:
-                        break;
-                    case ObjetoSeleccionado.Tesoro:
-                        Mapa[fila, columna].Monstruo = false;
-                        break;
-                }
-
-                pan.Background = Brushes.White;
-
-                DeleteAlrededores(fila, columna, _objetoSeleccionado);
-            }
-        }
-
-        private void AddAlrededores(int fila, int columna, ObjetoSeleccionado objetoSeleccionado)
-        {
-            switch (objetoSeleccionado)
-            {
-                case ObjetoSeleccionado.Monstruo:
-                    if (fila + 1 < _dimesionMapa)
-                    {
-                        Mapa[fila + 1, columna].Hedor = true;
-                        GetBorderByIndex(fila + 1, columna).Background = Brushes.DarkGreen;
-                    }
-                    if (fila - 1 >= 0)
-                    {
-                        Mapa[fila - 1, columna].Hedor = true;
-                        GetBorderByIndex(fila - 1, columna).Background = Brushes.DarkGreen;
-                    }
-                    if (columna + 1 < _dimesionMapa)
-                    {
-                        Mapa[fila, columna + 1].Hedor = true;
-                        GetBorderByIndex(fila, columna + 1).Background = Brushes.DarkGreen;
-                    }
-                    if (columna - 1 >= 0)
-                    {
-                        Mapa[fila, columna - 1].Hedor = true;
-                        GetBorderByIndex(fila, columna - 1).Background = Brushes.DarkGreen;
-                    }
-                    break;
-                case ObjetoSeleccionado.Precipicio:
-                    if (fila + 1 < _dimesionMapa)
-                    {
-                        Mapa[fila + 1, columna].Brisa = true;
-                        GetBorderByIndex(fila + 1, columna).Background = Brushes.LightBlue;
-                    }
-                    if (fila - 1 >= 0)
-                    {
-                        Mapa[fila - 1, columna].Brisa = true;
-                        GetBorderByIndex(fila - 1, columna).Background = Brushes.LightBlue;
-                    }
-                    if (columna + 1 < _dimesionMapa)
-                    {
-                        Mapa[fila, columna + 1].Brisa = true;
-                        GetBorderByIndex(fila, columna + 1).Background = Brushes.LightBlue;
-                    }
-                    if (columna - 1 >= 0)
-                    {
-                        Mapa[fila, columna - 1].Brisa = true;
-                        GetBorderByIndex(fila, columna - 1).Background = Brushes.LightBlue;
-                    }
-                    break;
-            }
-        }
-
-        private void DeleteAlrededores(int fila, int columna, ObjetoSeleccionado objetoSeleccionado)
-        {
-            switch (objetoSeleccionado)
-            {
-                case ObjetoSeleccionado.Monstruo:
-                    if (fila + 1 < _dimesionMapa)
-                    {
-                        Mapa[fila + 1, columna].Hedor = true;
-                        GetBorderByIndex(fila + 1, columna).Background = Brushes.White;
-                    }
-                    if (fila - 1 >= 0)
-                    {
-                        Mapa[fila - 1, columna].Hedor = true;
-                        GetBorderByIndex(fila - 1, columna).Background = Brushes.White;
-                    }
-                    if (columna + 1 < _dimesionMapa)
-                    {
-                        Mapa[fila, columna + 1].Hedor = true;
-                        GetBorderByIndex(fila, columna + 1).Background = Brushes.White;
-                    }
-                    if (columna - 1 >= 0)
-                    {
-                        Mapa[fila, columna - 1].Hedor = true;
-                        GetBorderByIndex(fila, columna - 1).Background = Brushes.White;
-                    }
-                    break;
-                case ObjetoSeleccionado.Precipicio:
-                    if (fila + 1 < _dimesionMapa)
-                    {
-                        Mapa[fila + 1, columna].Brisa = true;
-                        GetBorderByIndex(fila + 1, columna).Background = Brushes.White;
-                    }
-                    if (fila - 1 >= 0)
-                    {
-                        Mapa[fila - 1, columna].Brisa = true;
-                        GetBorderByIndex(fila - 1, columna).Background = Brushes.White;
-                    }
-                    if (columna + 1 < _dimesionMapa)
-                    {
-                        Mapa[fila, columna + 1].Brisa = true;
-                        GetBorderByIndex(fila, columna + 1).Background = Brushes.White;
-                    }
-                    if (columna - 1 >= 0)
-                    {
-                        Mapa[fila, columna - 1].Brisa = true;
-                        GetBorderByIndex(fila, columna - 1).Background = Brushes.White;
-                    }
-                    break;
+                GetBorderByIndex(fila, columna).Background = Brushes.White;
             }
         }
 
@@ -285,7 +247,7 @@ namespace SICuevaMonstruo
         {
             Grid.SetRow(agente.Elemento, agente.Posicion.X);
             Grid.SetColumn(agente.Elemento, agente.Posicion.Y);
-            
+
             this.Cueva.Children.Add(agente.Elemento);
         }
 
