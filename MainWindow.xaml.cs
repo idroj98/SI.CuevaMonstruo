@@ -30,6 +30,7 @@ namespace SICuevaMonstruo
         private int _dimesionMapa;
         private ObjetoSeleccionado _objetoSeleccionado;
         private List<Agente> _agentes;
+        private bool _isOn = false;
 
         private readonly DispatcherTimer _dispatcherTimer = new DispatcherTimer();
 
@@ -122,32 +123,35 @@ namespace SICuevaMonstruo
 
         private void ClickCeldaLeft(object sender, MouseEventArgs e)
         {
-            var pan = sender as Border;
-
-            var columna = Grid.GetColumn(pan);
-            var fila = Grid.GetRow(pan);
-
-
-            switch (_objetoSeleccionado)
+            if (!_isOn)
             {
-                case ObjetoSeleccionado.Monstruo:
-                    Mapa[fila, columna].Monstruo = !Mapa[fila, columna].Monstruo;
-                    UpdateAlrededores(fila, columna, Mapa[fila, columna].Monstruo);
-                    break;
-                case ObjetoSeleccionado.Precipicio:
-                    Mapa[fila, columna].Precipicio = !Mapa[fila, columna].Precipicio;
-                    UpdateAlrededores(fila, columna, Mapa[fila, columna].Precipicio);
-                    break;
-                case ObjetoSeleccionado.Agente:
-                    SetPosicionAgenteMapa(fila,columna);
-                    break;
-                case ObjetoSeleccionado.Tesoro:
-                    Mapa[fila, columna].Resplandor = !Mapa[fila, columna].Resplandor;
-                    UpdateAlrededores(fila, columna, Mapa[fila, columna].Resplandor);
-                    break; 
-            }
+                var pan = sender as Border;
 
-            ActualizarCasilla(fila, columna);
+                var columna = Grid.GetColumn(pan);
+                var fila = Grid.GetRow(pan);
+
+
+                switch (_objetoSeleccionado)
+                {
+                    case ObjetoSeleccionado.Monstruo:
+                        Mapa[fila, columna].Monstruo = !Mapa[fila, columna].Monstruo;
+                        UpdateAlrededores(fila, columna, Mapa[fila, columna].Monstruo);
+                        break;
+                    case ObjetoSeleccionado.Precipicio:
+                        Mapa[fila, columna].Precipicio = !Mapa[fila, columna].Precipicio;
+                        UpdateAlrededores(fila, columna, Mapa[fila, columna].Precipicio);
+                        break;
+                    case ObjetoSeleccionado.Agente:
+                        SetPosicionAgenteMapa(fila, columna);
+                        break;
+                    case ObjetoSeleccionado.Tesoro:
+                        Mapa[fila, columna].Resplandor = !Mapa[fila, columna].Resplandor;
+                        UpdateAlrededores(fila, columna, Mapa[fila, columna].Resplandor);
+                        break;
+                }
+
+                ActualizarCasilla(fila, columna);
+            }
         }
 
         private void UpdateAlrededores(int fila, int columna, bool add)
@@ -275,17 +279,24 @@ namespace SICuevaMonstruo
 
         private void Start_Click(object sender, RoutedEventArgs e)
         {
+            _isOn = true;
             _dispatcherTimer.Start();
         }
 
         private void Stop_Click(object sender, RoutedEventArgs e)
         {
+            _isOn = false;
             _dispatcherTimer.Stop();
         }
 
         private void Seleccion_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             this._objetoSeleccionado = (ObjetoSeleccionado)this.Seleccion.SelectedItem;
+        }
+
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            _dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 1000 / ((int)this.Velocidad.Value + 1));
         }
     }
 }

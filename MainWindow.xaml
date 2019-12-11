@@ -15,7 +15,8 @@
         <Label Content="La Cueva del monstruo" FontSize="45" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="66" Width="579"/>
         <ComboBox Name="Seleccion" FontSize="16" HorizontalAlignment="Left" Margin="117,189,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="Seleccion_SelectionChanged"/>
 
-        <Button Name="Start" FontSize="16"  Content="Start" HorizontalAlignment="Left" Margin="97,259,0,0" VerticalAlignment="Top" Width="75" Click="Start_Click"/>
-        <Button Name="Stop" FontSize="16" Content="Stop" HorizontalAlignment="Left" Margin="178,259,0,0" VerticalAlignment="Top" Width="75" Click="Stop_Click"/>
+        <Button Name="Start" FontSize="16"  Content="Start" HorizontalAlignment="Left" Margin="97,289,0,0" VerticalAlignment="Top" Width="75" Click="Start_Click"/>
+        <Button Name="Stop" FontSize="16" Content="Stop" HorizontalAlignment="Left" Margin="178,289,0,0" VerticalAlignment="Top" Width="75" Click="Stop_Click"/>
+        <Slider Name="Velocidad" HorizontalAlignment="Left" Margin="117,234,0,0" VerticalAlignment="Top" Width="120" ValueChanged="Slider_ValueChanged"/>
     </Grid>
 </Window>
