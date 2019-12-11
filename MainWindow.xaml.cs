@@ -137,15 +137,7 @@ namespace SICuevaMonstruo
                     UpdateAlrededores(fila, columna, Mapa[fila, columna].Precipicio);
                     break;
                 case ObjetoSeleccionado.Agente:
-                    var elemento = new Image()
-                    {
-                        Name = "Robot",
-                        Source = new BitmapImage(new Uri("https://res.cloudinary.com/pixel-art/image/upload/v1554320836/robot/1466134-robot-pixel-art.png")),
-                        Margin = new Thickness(0.5)
-                    };
-                    var agente = new Agente(_dimesionMapa, new Posicion() { X = fila, Y = columna }, elemento);
-                    _agentes.Add(agente);
-                    SetPosicionAgenteMapa(agente);
+                    SetPosicionAgenteMapa(fila,columna);
                     break;
                 case ObjetoSeleccionado.Tesoro:
                     Mapa[fila, columna].Resplandor = !Mapa[fila, columna].Resplandor;
@@ -243,12 +235,31 @@ namespace SICuevaMonstruo
             }
         }
 
-        private void SetPosicionAgenteMapa(Agente agente)
+        private void SetPosicionAgenteMapa(int fila, int columna)
         {
-            Grid.SetRow(agente.Elemento, agente.Posicion.X);
-            Grid.SetColumn(agente.Elemento, agente.Posicion.Y);
+            if (Mapa[fila,columna].Agente != null)
+            {
+                this._agentes.Remove(Mapa[fila, columna].Agente);
+                this.Cueva.Children.Remove(Mapa[fila, columna].Agente.Elemento);
+                Mapa[fila, columna].Agente = null;
+            }
+            else
+            {
+                var elemento = new Image()
+                {
+                    Name = "Robot",
+                    Source = new BitmapImage(new Uri("https://res.cloudinary.com/pixel-art/image/upload/v1554320836/robot/1466134-robot-pixel-art.png")),
+                    Margin = new Thickness(0.5)
+                };
+                var agente = new Agente(_dimesionMapa, new Posicion() { X = fila, Y = columna }, elemento);
+                Mapa[fila, columna].Agente = agente;
+                _agentes.Add(agente);
 
-            this.Cueva.Children.Add(agente.Elemento);
+                Grid.SetRow(agente.Elemento, agente.Posicion.X);
+                Grid.SetColumn(agente.Elemento, agente.Posicion.Y);
+
+                this.Cueva.Children.Add(agente.Elemento);
+            }
         }
 
         private Border GetBorderByIndex(int fila, int columna)
