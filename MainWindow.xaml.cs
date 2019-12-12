@@ -39,8 +39,6 @@ namespace SICuevaMonstruo
             _dispatcherTimer.Tick += new EventHandler(Update);
             _dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 250);
 
-            _agentes = new List<Agente>();
-
             InitializeComponent();
 
             this.Seleccion.ItemsSource = Enum.GetValues(typeof(ObjetoSeleccionado)).Cast<ObjetoSeleccionado>();
@@ -58,6 +56,8 @@ namespace SICuevaMonstruo
 
         private void CrearMapa_Click(object sender, RoutedEventArgs e)
         {
+            _agentes = new List<Agente>();
+
             var cueva = this.Cueva;
             try
             {
@@ -130,7 +130,6 @@ namespace SICuevaMonstruo
                 var columna = Grid.GetColumn(pan);
                 var fila = Grid.GetRow(pan);
 
-
                 switch (_objetoSeleccionado)
                 {
                     case ObjetoSeleccionado.Monstruo:
@@ -156,49 +155,55 @@ namespace SICuevaMonstruo
 
         private void UpdateAlrededores(int fila, int columna, bool add)
         {
+            var valueAdded = 1;
+            if (!add)
+            {
+                valueAdded = -1;
+            }
+
             switch (_objetoSeleccionado)
             {
                 case ObjetoSeleccionado.Monstruo:
                     if (fila + 1 < _dimesionMapa)
                     {
-                        Mapa[fila + 1, columna].Hedor = add;
+                        Mapa[fila + 1, columna].Hedor += valueAdded;
                         ActualizarCasilla(fila + 1, columna);
                     }
                     if (fila - 1 >= 0)
                     {
-                        Mapa[fila - 1, columna].Hedor = add;
+                        Mapa[fila - 1, columna].Hedor += valueAdded;
                         ActualizarCasilla(fila - 1, columna);
                     }
                     if (columna + 1 < _dimesionMapa)
                     {
-                        Mapa[fila, columna + 1].Hedor = add;
+                        Mapa[fila, columna + 1].Hedor += valueAdded;
                         ActualizarCasilla(fila, columna + 1);
                     }
                     if (columna - 1 >= 0)
                     {
-                        Mapa[fila, columna - 1].Hedor = add;
+                        Mapa[fila, columna - 1].Hedor += valueAdded;
                         ActualizarCasilla(fila, columna - 1);
                     }
                     break;
                 case ObjetoSeleccionado.Precipicio:
                     if (fila + 1 < _dimesionMapa)
                     {
-                        Mapa[fila + 1, columna].Brisa = add;
+                        Mapa[fila + 1, columna].Brisa += valueAdded;
                         ActualizarCasilla(fila + 1, columna);
                     }
                     if (fila - 1 >= 0)
                     {
-                        Mapa[fila - 1, columna].Brisa = add;
+                        Mapa[fila - 1, columna].Brisa += valueAdded;
                         ActualizarCasilla(fila - 1, columna);
                     }
                     if (columna + 1 < _dimesionMapa)
                     {
-                        Mapa[fila, columna + 1].Brisa = add;
+                        Mapa[fila, columna + 1].Brisa += valueAdded;
                         ActualizarCasilla(fila, columna + 1);
                     }
                     if (columna - 1 >= 0)
                     {
-                        Mapa[fila, columna - 1].Brisa = add;
+                        Mapa[fila, columna - 1].Brisa += valueAdded;
                         ActualizarCasilla(fila, columna - 1);
                     }
                     break;
@@ -215,11 +220,11 @@ namespace SICuevaMonstruo
             {
                 GetBorderByIndex(fila, columna).Background = Brushes.Black;
             }
-            else if (Mapa[fila, columna].Hedor && Mapa[fila, columna].Brisa && Mapa[fila, columna].Resplandor)
+            else if (Mapa[fila, columna].HasHedor && Mapa[fila, columna].HasBrisa && Mapa[fila, columna].Resplandor)
             {
                 GetBorderByIndex(fila, columna).Background = Brushes.Red;
             }
-            else if (Mapa[fila, columna].Hedor && Mapa[fila, columna].Brisa)
+            else if (Mapa[fila, columna].HasHedor && Mapa[fila, columna].HasBrisa)
             {
                 GetBorderByIndex(fila, columna).Background = Brushes.Gray;
             }
@@ -227,11 +232,11 @@ namespace SICuevaMonstruo
             {
                 GetBorderByIndex(fila, columna).Background = Brushes.Gold;
             }
-            else if (Mapa[fila, columna].Hedor)
+            else if (Mapa[fila, columna].HasHedor)
             {
                 GetBorderByIndex(fila, columna).Background = Brushes.LightGreen;
             }
-            else if (Mapa[fila, columna].Brisa)
+            else if (Mapa[fila, columna].HasBrisa)
             {
                 GetBorderByIndex(fila, columna).Background = Brushes.LightBlue;
             }
@@ -254,9 +259,10 @@ namespace SICuevaMonstruo
                 var elemento = new Image()
                 {
                     Name = "Robot",
-                    Source = new BitmapImage(new Uri("https://res.cloudinary.com/pixel-art/image/upload/v1554320836/robot/1466134-robot-pixel-art.png")),
+                    Source = new BitmapImage(new Uri(@"https://res.cloudinary.com/pixel-art/image/upload/v1554320836/robot/1466134-robot-pixel-art.png")),
                     Margin = new Thickness(0.5)
                 };
+                elemento.MouseLeftButtonUp += DeleteAgente;
                 var agente = new Agente(_dimesionMapa, new Posicion() { X = fila, Y = columna }, elemento);
                 Mapa[fila, columna].Agente = agente;
                 _agentes.Add(agente);
@@ -266,6 +272,18 @@ namespace SICuevaMonstruo
 
                 this.Cueva.Children.Add(agente.Elemento);
             }
+        }
+
+        private void DeleteAgente(object sender, MouseEventArgs e)
+        {
+            var img = sender as Image;
+
+            var columna = Grid.GetColumn(img);
+            var fila = Grid.GetRow(img);
+
+            this._agentes.Remove(Mapa[fila, columna].Agente);
+            this.Cueva.Children.Remove(Mapa[fila, columna].Agente.Elemento);
+            Mapa[fila, columna].Agente = null;
         }
 
         private Border GetBorderByIndex(int fila, int columna)
@@ -297,6 +315,13 @@ namespace SICuevaMonstruo
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             _dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 1000 / ((int)this.Velocidad.Value + 1));
+        }
+
+        private void Reiniciar_Click(object sender, RoutedEventArgs e)
+        {
+            this._isOn = false;
+            _dispatcherTimer.Stop();
+            CrearMapa_Click(sender, e);
         }
     }
 }
