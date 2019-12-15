@@ -67,6 +67,7 @@ namespace SICuevaMonstruo
             {
                 if(retornar)
                 {
+                    bool posAnterior = false;
                     if(!_movimientosMapa[Posicion.X, Posicion.Y].IzquierdaDone)
                     {
                         if (esPosibleIrA(posIzquierda.X, posIzquierda.Y))
@@ -75,13 +76,11 @@ namespace SICuevaMonstruo
                             Posicion.X = posIzquierda.X;
                             Posicion.Y = posIzquierda.Y;
                             _movimientosMapa[Posicion.X, Posicion.Y].IzquierdaDone = true;
-                            _caminoRecorrido.Push(posIzquierda);
+                            _caminoRecorrido.Push(new Posicion(posIzquierda.X, posIzquierda.Y));
                         }
                         else
                         {
-                            var posicionAnterior = _caminoRecorrido.Pop();
-                            Posicion.X = posicionAnterior.X;
-                            Posicion.Y = posicionAnterior.Y;
+                            posAnterior = true;
                         }
                     }
                     else if (!_movimientosMapa[Posicion.X, Posicion.Y].ArribaDone)
@@ -92,13 +91,11 @@ namespace SICuevaMonstruo
                             Posicion.X = posArriba.X;
                             Posicion.Y = posArriba.Y;
                             _movimientosMapa[Posicion.X, Posicion.Y].ArribaDone = true;
-                            _caminoRecorrido.Push(posArriba);
+                            _caminoRecorrido.Push(new Posicion(posArriba.X, posArriba.Y));
                         }
                         else
                         {
-                            var posicionAnterior = _caminoRecorrido.Pop();
-                            Posicion.X = posicionAnterior.X;
-                            Posicion.Y = posicionAnterior.Y;
+                            posAnterior = true;
                         }
                     }
                     else if (!_movimientosMapa[Posicion.X, Posicion.Y].AbajoDone)
@@ -109,13 +106,11 @@ namespace SICuevaMonstruo
                             Posicion.X = posAbajo.X;
                             Posicion.Y = posAbajo.Y;
                             _movimientosMapa[Posicion.X, Posicion.Y].AbajoDone = true;
-                            _caminoRecorrido.Push(posAbajo);
+                            _caminoRecorrido.Push(new Posicion(posAbajo.X, posAbajo.Y));
                         }
                         else
                         {
-                            var posicionAnterior = _caminoRecorrido.Pop();
-                            Posicion.X = posicionAnterior.X;
-                            Posicion.Y = posicionAnterior.Y;
+                            posAnterior = true;
                         }
                     }
                     else if (!_movimientosMapa[Posicion.X, Posicion.Y].DerechaDone)
@@ -126,7 +121,33 @@ namespace SICuevaMonstruo
                             Posicion.X = posDerecha.X;
                             Posicion.Y = posDerecha.Y;
                             _movimientosMapa[Posicion.X, Posicion.Y].DerechaDone = true;
-                            _caminoRecorrido.Push(posDerecha);
+                            _caminoRecorrido.Push(new Posicion(posDerecha.X, posDerecha.Y));
+                        }
+                        else
+                        {
+                            posAnterior = true;
+                            
+                        }
+                    } else
+                    {
+                        posAnterior = true;
+                    }
+
+                    if (posAnterior)
+                    {
+                        
+                        if(_caminoRecorrido.Count == 0)
+                        {
+                            retornar = false;
+                            for (int i = 0; i < _dimesionMapa; i++)
+                            {
+                                for (int j = 0; j < _dimesionMapa; j++)
+                                {
+                                    _mapa[i, j] = null;
+                                    _movimientosMapa[i, j] = new MovimientosCasilla();
+                                }
+                            }
+                            _caminoRecorrido.Push(new Posicion(Posicion.X, Posicion.Y));
                         }
                         else
                         {
@@ -134,11 +155,6 @@ namespace SICuevaMonstruo
                             Posicion.X = posicionAnterior.X;
                             Posicion.Y = posicionAnterior.Y;
                         }
-                    } else
-                    {
-                        var posicionAnterior = _caminoRecorrido.Pop();
-                        Posicion.X = posicionAnterior.X;
-                        Posicion.Y = posicionAnterior.Y;
                     }
                 }
                 else
@@ -156,8 +172,6 @@ namespace SICuevaMonstruo
                     }
                     else if (currentCelda.HasHedor && !Posicion.EqualTo(HedorPropio))
                     {
-                        //_movimientosMapa[Posicion.X, Posicion.Y].Visitada = true;
-
                         var pos = PosicionDisparo();
                         if (NumFlechas > 0 && pos != null)
                         {
@@ -174,9 +188,10 @@ namespace SICuevaMonstruo
                         }
                         else
                         {
-                            var posicionAnterior = _caminoRecorrido.Pop();
-                            Posicion.X = posicionAnterior.X;
-                            Posicion.Y = posicionAnterior.Y;
+                            _caminoRecorrido.Pop();
+                            var posIr = _caminoRecorrido.Peek();
+                            Posicion.X = posIr.X;
+                            Posicion.Y = posIr.Y;
                         }
 
                     }
@@ -184,9 +199,10 @@ namespace SICuevaMonstruo
                     {
                         movimientoCurrentCelda.Visitada = true;
 
-                        var posicionAnterior = _caminoRecorrido.Pop();
-                        Posicion.X = posicionAnterior.X;
-                        Posicion.Y = posicionAnterior.Y;
+                        _caminoRecorrido.Pop();
+                        var posIr = _caminoRecorrido.Peek();
+                        Posicion.X = posIr.X;
+                        Posicion.Y = posIr.Y;
                     }
                     else
                     {
@@ -259,32 +275,33 @@ namespace SICuevaMonstruo
                                     posicionDestino = posIzquierda;
                                 }
                             }
-                            else
-                            {
-                                _movimientosMapa[Posicion.X, Posicion.Y].movimientosHechos = true;
-                                _movimientosMapa[Posicion.X, Posicion.Y].Visitada = true;
-                                if (!movimientoHechosEn(posDerecha))
-                                {
-                                    if (esPosibleIrA(posDerecha.X, posDerecha.Y))
-                                        posicionDestino = posDerecha;
-                                }
-                                else if (!movimientoHechosEn(posAbajo))
-                                {
-                                    if (esPosibleIrA(posAbajo.X, posAbajo.Y))
-                                        posicionDestino = posAbajo;
-                                }
-                                else if (!movimientoHechosEn(posArriba))
-                                {
-                                    if (esPosibleIrA(posArriba.X, posArriba.Y))
-                                        posicionDestino = posArriba;
-                                }
-                                else if (!movimientoHechosEn(posIzquierda))
-                                {
-                                    if (esPosibleIrA(posIzquierda.X, posIzquierda.Y))
-                                        posicionDestino = posIzquierda;
-                                }
+                            //else
+                            //{
+                            //    _movimientosMapa[Posicion.X, Posicion.Y].movimientosHechos = true;
+                                
+                            //    if (!movimientoHechosEn(posDerecha))
+                            //    {
+                            //        if (esPosibleIrA(posDerecha.X, posDerecha.Y))
+                            //            posicionDestino = posDerecha;
+                            //    }
+                            //    else if (!movimientoHechosEn(posAbajo))
+                            //    {
+                            //        if (esPosibleIrA(posAbajo.X, posAbajo.Y))
+                            //            posicionDestino = posAbajo;
+                            //    }
+                            //    else if (!movimientoHechosEn(posArriba))
+                            //    {
+                            //        if (esPosibleIrA(posArriba.X, posArriba.Y))
+                            //            posicionDestino = posArriba;
+                            //    }
+                            //    else if (!movimientoHechosEn(posIzquierda))
+                            //    {
+                            //        if (esPosibleIrA(posIzquierda.X, posIzquierda.Y))
+                            //            posicionDestino = posIzquierda;
+                            //    }
                                 else
                                 {
+                                    _movimientosMapa[Posicion.X, Posicion.Y].Visitada = true;
                                     //_movimientosMapa[Posicion.X, Posicion.Y].Visitada = true;
                                     //if (!PosicionOutOfBounds(posDerecha) && !_movimientosMapa[posDerecha.X, posDerecha.Y].Visitada)
                                     //{
@@ -302,7 +319,7 @@ namespace SICuevaMonstruo
                                     //{
                                     //    posicionDestino = posArriba;
                                     //}
-                                }
+                                //}
                             }
                         }
 
@@ -334,7 +351,8 @@ namespace SICuevaMonstruo
                                 _movimientosMapa[Posicion.X, Posicion.Y].Visitada = true;
                             }
 
-                            _caminoRecorrido.Push(new Posicion(Posicion.X, Posicion.Y));
+                            //_caminoRecorrido.Push(new Posicion(Posicion.X, Posicion.Y));
+                            _caminoRecorrido.Push(new Posicion(posicionDestino.X, posicionDestino.Y));
                             Posicion.X = posicionDestino.X;
                             Posicion.Y = posicionDestino.Y;
                         }
@@ -354,7 +372,7 @@ namespace SICuevaMonstruo
                 // Aquí estamos haciendo la vuelta atrás por el camino que hemos venido
                 if (_caminoRecorrido.Count == 0)
                 {
-                    //MainWindow.AgenteFinaliza(Posicion);
+                    MainWindow.AgenteFinaliza(Posicion);
                 }
                 else
                 {

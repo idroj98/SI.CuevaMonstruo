@@ -68,6 +68,7 @@ namespace SICuevaMonstruo
         private void CrearMapa_Click(object sender, RoutedEventArgs e)
         {
             _agentes = new List<Agente>();
+            this._hayGanador = false;
 
             var cueva = this.Cueva;
             try
@@ -343,6 +344,7 @@ namespace SICuevaMonstruo
         private void Reiniciar_Click(object sender, RoutedEventArgs e)
         {
             this._isOn = false;
+            this._hayGanador = false;
             _dispatcherTimer.Stop();
             CrearMapa_Click(sender, e);
         }
@@ -383,9 +385,9 @@ namespace SICuevaMonstruo
             {
                 GetBorderByIndex(pos.X, pos.Y).Background = Brushes.Tomato;
                 _hayGanador = true;
-                Stop_Click(null, null);
-                MessageBox.Show("WE HAVE A WINNER!");
-                Reiniciar_Click(null, null);
+                //Stop_Click(null, null);
+                //MessageBox.Show("WE HAVE A WINNER!");
+                //Reiniciar_Click(null, null);
             }
         }
 
