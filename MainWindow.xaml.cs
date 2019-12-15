@@ -13,6 +13,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.Drawing;
+
+using System.IO;
 
 namespace SICuevaMonstruo
 {
@@ -32,6 +35,8 @@ namespace SICuevaMonstruo
         private ObjetoSeleccionado _objetoSeleccionado;
         private List<Agente> _agentes;
         private bool _isOn = false;
+        private int NumMonstruos = 0;
+        private bool _hayGanador = false;
 
         private readonly DispatcherTimer _dispatcherTimer = new DispatcherTimer();
 
@@ -49,12 +54,15 @@ namespace SICuevaMonstruo
 
         private void Update(object sender, EventArgs e)
         {
+            string info_agentes = "";
             foreach (var agente in _agentes)
             {
                 agente.Update();
                 Grid.SetRow(agente.Elemento, agente.Posicion.X);
                 Grid.SetColumn(agente.Elemento, agente.Posicion.Y);
+                info_agentes += agente + "\n";
             }
+            this.InfoAgentes.Content = info_agentes;
         }
 
         private void CrearMapa_Click(object sender, RoutedEventArgs e)
@@ -138,6 +146,10 @@ namespace SICuevaMonstruo
                     case ObjetoSeleccionado.Monstruo:
                         Mapa[fila, columna].Monstruo = !Mapa[fila, columna].Monstruo;
                         UpdateAlrededores(fila, columna, Mapa[fila, columna].Monstruo);
+                        if (Mapa[fila, columna].Monstruo)
+                            NumMonstruos++;
+                        else
+                            NumMonstruos--;
                         break;
                     case ObjetoSeleccionado.Precipicio:
                         Mapa[fila, columna].Precipicio = !Mapa[fila, columna].Precipicio;
@@ -266,10 +278,11 @@ namespace SICuevaMonstruo
                 {
                     Name = "Robot",
                     Source = new BitmapImage(new Uri(@"https://res.cloudinary.com/pixel-art/image/upload/v1554320836/robot/1466134-robot-pixel-art.png")),
-                    Margin = new Thickness(0.5)
+                    Margin = new Thickness(0.5),
+
                 };
                 elemento.MouseLeftButtonUp += DeleteAgente;
-                var agente = new Agente(_dimesionMapa, new Posicion() { X = fila, Y = columna }, elemento, this);
+                var agente = new Agente(_dimesionMapa, new Posicion(fila, columna), elemento, this);
                 Mapa[fila, columna].Agente = agente;
                 _agentes.Add(agente);
 
@@ -304,6 +317,10 @@ namespace SICuevaMonstruo
         private void Start_Click(object sender, RoutedEventArgs e)
         {
             _isOn = true;
+            foreach (Agente agente in _agentes)
+            {
+                agente.NumFlechas = NumMonstruos;
+            }
             _dispatcherTimer.Start();
         }
 
@@ -336,5 +353,41 @@ namespace SICuevaMonstruo
             Mapa[pos.X, pos.Y].Resplandor = false;
             ActualizarCasilla(pos.X, pos.Y);
         }
+
+        public bool Disparar(Posicion pos)
+        {
+            if (Mapa[pos.X, pos.Y].Monstruo)
+            {
+                Mapa[pos.X, pos.Y].Monstruo = false;
+                ActualizarCasilla(pos.X, pos.Y);
+
+                _objetoSeleccionado = ObjetoSeleccionado.Monstruo;
+
+                UpdateAlrededores(pos.X, pos.Y, false);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public void TirarsePedo(Posicion pos)
+        {
+            Mapa[pos.X, pos.Y].Hedor++;
+            GetBorderByIndex(pos.X, pos.Y).Background = Brushes.Purple;
+        }
+
+        public void AgenteFinaliza(Posicion pos)
+        {
+            if (!_hayGanador)
+            {
+                GetBorderByIndex(pos.X, pos.Y).Background = Brushes.Tomato;
+                _hayGanador = true;
+                Stop_Click(null, null);
+                MessageBox.Show("WE HAVE A WINNER!");
+                Reiniciar_Click(null, null);
+            }
+        }
+
     }
 }
