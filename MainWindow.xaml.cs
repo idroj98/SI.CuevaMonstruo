@@ -26,7 +26,8 @@ namespace SICuevaMonstruo
             Monstruo, Precipicio, Tesoro, Agente
         }
 
-        public static Celda[,] Mapa;
+        public Celda[,] Mapa;
+        public int TotalTesoroRestantes;
         private int _dimesionMapa;
         private ObjetoSeleccionado _objetoSeleccionado;
         private List<Agente> _agentes;
@@ -38,6 +39,8 @@ namespace SICuevaMonstruo
         {
             _dispatcherTimer.Tick += new EventHandler(Update);
             _dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 250);
+
+            TotalTesoroRestantes = 0;
 
             InitializeComponent();
 
@@ -207,6 +210,9 @@ namespace SICuevaMonstruo
                         ActualizarCasilla(fila, columna - 1);
                     }
                     break;
+                case ObjetoSeleccionado.Tesoro:
+                    TotalTesoroRestantes += valueAdded;
+                    break;
             }
         }
 
@@ -263,7 +269,7 @@ namespace SICuevaMonstruo
                     Margin = new Thickness(0.5)
                 };
                 elemento.MouseLeftButtonUp += DeleteAgente;
-                var agente = new Agente(_dimesionMapa, new Posicion() { X = fila, Y = columna }, elemento);
+                var agente = new Agente(_dimesionMapa, new Posicion() { X = fila, Y = columna }, elemento, this);
                 Mapa[fila, columna].Agente = agente;
                 _agentes.Add(agente);
 
@@ -322,6 +328,13 @@ namespace SICuevaMonstruo
             this._isOn = false;
             _dispatcherTimer.Stop();
             CrearMapa_Click(sender, e);
+        }
+
+        public void CogerTesoro(Posicion pos)
+        {
+            TotalTesoroRestantes--;
+            Mapa[pos.X, pos.Y].Resplandor = false;
+            ActualizarCasilla(pos.X, pos.Y);
         }
     }
 }

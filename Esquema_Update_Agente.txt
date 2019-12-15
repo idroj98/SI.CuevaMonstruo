@@ -1,0 +1,92 @@
+Objetivos:
+	1. Encontrar tesoro.
+	2. Salir de la cueva con el tesoro.
+
+Requisitos mínimos:
+	1 monstruo
+	1 tesoro
+	x precipicios
+	(Las 3 cosas son situadas por el usuario tal y como desee).
+	La casilla [0, 0] es la inicial y no puede tener ni monstruos ni precipicios.
+	El agente tiene 3 movimeintos (norte, sur, este, oeste).
+	El agente no puede morir.
+	Distintas velocidades.
+
+Cosas opcionales:
+	Varios monstruos
+	Matar a los monstruos (n flechas = n monstruos). 
+	Flechas en línea recta.
+	Si muere el monstruo, las casillas de alrededor dejan de tener hedor.
+
+	Varios agentes.
+	Cada uno entra por una casilla diferente. (Hay que decidir como aparecen)
+	
+	Opción difícil: Competencia entre los agentes. Producir hedor y no dejarse egañar.
+	8 y varios tesoros (a ver quien coge más).
+
+
+
+
+
+
+
+Tenemos que tener una: 
+
+	Pila/Lista<Posicion> caminoRecorrido;
+
+	currentPos = casillaSalida
+	caminoRecorrido tiene que tener desde el principio la casilla de salida(por si desde el principio estamos atascados y solo podemos mover)
+	replicaMapa -> inicialmente todas las casillas van a estar vacías hasta que detectemos algo
+	boleano TesorosCogido = false;
+	si hacemos lo de coger xTesoros tendríamos que poner un contador de tesoros
+	atascado = false;
+	
+
+	update del agente:
+	if(!TesorosCogidos){
+		sensor casilla actual
+		actualizar replica del mapa
+		if(tesoro)--> actualizar variables tesoro		
+			      actualizarMapa
+						
+		else if(EstamosEnHedor)
+			(cuando sabemos 3 hedores muy probablamente el monstruo esté en medio...)
+			siPosibleDisparo-> disparar 
+					   EscucharGrito 
+					   actualizarMapa (ya sea false o true el grito)
+				return (no hacer nada más hasta la próxima iteración).
+				(hay que pensar que si fallamos el disparo descubrimos un nuevo camino por donde ir)
+				(si acertamos el disparo, también)
+				(con varios monstruos, lo del grito si que debería decirnos que le hemos dado, porque no basta con quitar el hedor en el que estamos ya que 				podría haber más de otros monstruos
+				y seguiríamos intentando disparar o no sabríamos que tenemos 
+			else if -> volver atrás y marcar visitado
+			
+		else if (si estamosEnBrisa){
+			marcarCurrentPosomoYaVisitada
+			volvemos a UltimaPos
+			
+		} else {
+			// Cuando estemos en una casilla libre puede ser un buen momento para tirarnos un pedo y provocar hedor
+			si Derecha -> Go. currentPos = moverDerecha(currentPos) 
+			else if Abajo -> Go. currentPos = moverAbajo(currentPos) 
+			else if Izquierda-> Go. currentPos = moverizquierda(currentPos) 
+			else if arriba-> Go. currentPos = moverArriba(currentPos) 
+			else {
+				atascado = true; (Si no estamos ni em brisa, ni hedor, ni podemos disparar, ni coger tesoro. Somos mierda y hemos perdido
+			}
+		}
+	} else {
+		if(ListaVacia){
+			end
+			(podríamos notificar al programa principal que hemos llegado, y así hacer un ranking de velocidad o de número de tesoros cuando todos acaben)
+			si uno queda atascado podría detectarse de alguna forma (limitar el número de movimiento, obviamente dependiende de lo grande que sea el mapa)
+			o analizar si estamos repitiendo el mismo camino constantemente o estamos atascados sin movernos
+		} else {
+			(Si no añadimos ninguna extra comoo lo de producir hedor que modifique el mapa, en principio volver es tan simple como ir hacia atrás por donde has venido)
+			(Incluso aunque añadiéramos ese extra, como el agnte ya sabe que ha venido por ahí, si nota hedor sabrá que es de mentira por tanto podría seguir por donde ha venido)
+			volver a ultimaPos de la lista del caminio recorrido
+			eliminarDichaPosición
+		}
+	}
+	
+	
