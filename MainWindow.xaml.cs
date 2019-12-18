@@ -38,6 +38,7 @@ namespace SICuevaMonstruo
         private int _numMonstruos = 0;
         private bool _hayGanador = false;
         private Brush[] _colorAgentes = { Brushes.Lavender, Brushes.Khaki, Brushes.Moccasin, Brushes.MistyRose };
+        private bool _marcarCaminos;
 
         private readonly DispatcherTimer _dispatcherTimer = new DispatcherTimer();
 
@@ -321,6 +322,7 @@ namespace SICuevaMonstruo
         {
             _isOn = true;
             var i = 0;
+            _marcarCaminos = this.MarcarCaminos.IsChecked.Value;
             foreach (Agente agente in _agentes)
             {
                 if (i == _colorAgentes.Length)
@@ -402,11 +404,19 @@ namespace SICuevaMonstruo
 
         public void SetColorCasilla(Brush color, Posicion pos)
         {
-            if (!Mapa[pos.X, pos.Y].HasHedor && !Mapa[pos.X, pos.Y].HasBrisa)
+            if (_marcarCaminos)
             {
-                GetBorderByIndex(pos.X, pos.Y).Background = color;
+                if (!Mapa[pos.X, pos.Y].HasHedor && !Mapa[pos.X, pos.Y].HasBrisa)
+                {
+                    GetBorderByIndex(pos.X, pos.Y).Background = color;
+                }
             }
+            
         }
 
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            this._marcarCaminos = this.MarcarCaminos.IsChecked.Value;
+        }
     }
 }
