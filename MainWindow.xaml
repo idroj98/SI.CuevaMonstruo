@@ -19,6 +19,6 @@
         <Button Name="Stop" FontSize="16" Content="Stop" HorizontalAlignment="Left" Margin="178,289,0,0" VerticalAlignment="Top" Width="75" Click="Stop_Click"/>
         <Slider Name="Velocidad" HorizontalAlignment="Left" Margin="117,234,0,0" VerticalAlignment="Top" Width="120" ValueChanged="Slider_ValueChanged"/>
         <Button Name="Reiniciar" FontSize="16"  Content="Restart" HorizontalAlignment="Left" Margin="137,320,0,0" VerticalAlignment="Top" Width="75" Click="Reiniciar_Click"/>
-        <Label Name="InfoAgentes" Content="Label" HorizontalAlignment="Left" Margin="97,457,0,0" VerticalAlignment="Top" Width="381" Height="185"/>
+        <Label Name="InfoAgentes" FontSize="14" Content="Información sobre los agentes" HorizontalAlignment="Left" Margin="10,416,0,0" VerticalAlignment="Top" Width="558" Height="185"/>
     </Grid>
 </Window>

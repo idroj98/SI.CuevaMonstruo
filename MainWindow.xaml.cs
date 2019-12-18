@@ -35,8 +35,9 @@ namespace SICuevaMonstruo
         private ObjetoSeleccionado _objetoSeleccionado;
         private List<Agente> _agentes;
         private bool _isOn = false;
-        private int NumMonstruos = 0;
+        private int _numMonstruos = 0;
         private bool _hayGanador = false;
+        private Brush[] _colorAgentes = { Brushes.Lavender, Brushes.Khaki, Brushes.Moccasin, Brushes.MistyRose };
 
         private readonly DispatcherTimer _dispatcherTimer = new DispatcherTimer();
 
@@ -69,6 +70,7 @@ namespace SICuevaMonstruo
         {
             _agentes = new List<Agente>();
             this._hayGanador = false;
+            this._numMonstruos = 0;
 
             var cueva = this.Cueva;
             try
@@ -148,9 +150,9 @@ namespace SICuevaMonstruo
                         Mapa[fila, columna].Monstruo = !Mapa[fila, columna].Monstruo;
                         UpdateAlrededores(fila, columna, Mapa[fila, columna].Monstruo);
                         if (Mapa[fila, columna].Monstruo)
-                            NumMonstruos++;
+                            _numMonstruos++;
                         else
-                            NumMonstruos--;
+                            _numMonstruos--;
                         break;
                     case ObjetoSeleccionado.Precipicio:
                         Mapa[fila, columna].Precipicio = !Mapa[fila, columna].Precipicio;
@@ -229,7 +231,7 @@ namespace SICuevaMonstruo
             }
         }
 
-        private void ActualizarCasilla(int fila, int columna)
+        public void ActualizarCasilla(int fila, int columna)
         {
             if (Mapa[fila, columna].Monstruo)
             {
@@ -318,9 +320,15 @@ namespace SICuevaMonstruo
         private void Start_Click(object sender, RoutedEventArgs e)
         {
             _isOn = true;
+            var i = 0;
             foreach (Agente agente in _agentes)
             {
-                agente.NumFlechas = NumMonstruos;
+                if (i == _colorAgentes.Length)
+                    i = 0;
+
+                agente.ColorCasilla = _colorAgentes[i];
+                agente.NumFlechas = _numMonstruos;
+                i++;
             }
             _dispatcherTimer.Start();
         }
@@ -345,6 +353,7 @@ namespace SICuevaMonstruo
         {
             this._isOn = false;
             this._hayGanador = false;
+            this._numMonstruos = 0; 
             _dispatcherTimer.Stop();
             CrearMapa_Click(sender, e);
         }
@@ -388,6 +397,14 @@ namespace SICuevaMonstruo
                 //Stop_Click(null, null);
                 //MessageBox.Show("WE HAVE A WINNER!");
                 //Reiniciar_Click(null, null);
+            }
+        }
+
+        public void SetColorCasilla(Brush color, Posicion pos)
+        {
+            if (!Mapa[pos.X, pos.Y].HasHedor && !Mapa[pos.X, pos.Y].HasBrisa)
+            {
+                GetBorderByIndex(pos.X, pos.Y).Background = color;
             }
         }
 
